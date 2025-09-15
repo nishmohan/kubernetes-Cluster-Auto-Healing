@@ -27,6 +27,19 @@ Managing large-scale Kubernetes clusters manually is resource-intensive and erro
    - A valid kubeconfig to authenticate
    - I installed Go to local system
    - Install Helm
+  #### Kubernetes API Setup using Go
+  I wrote go code as below structure:
+  k8s-health-checker/
+     ├── go.mod
+     ├── go.sum
+     └── main.go   
+  Then installed required module using commands:
+  ```
+go get k8s.io/client-go@latest
+go get k8s.io/apimachinery@latest
+```
+  
+
  
 
   
