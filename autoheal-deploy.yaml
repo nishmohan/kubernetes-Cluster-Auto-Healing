@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autoheal
+  namespace: autoheal
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: autoheal }
+  template:
+    metadata:
+      labels: { app: autoheal }
+    spec:
+      serviceAccountName: autoheal-sa
+      containers:
+      - name: autoheal
+        image: autoheal:0.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests: { cpu: "50m", memory: "64Mi" }
+          limits:   { cpu: "200m", memory: "256Mi" }
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false

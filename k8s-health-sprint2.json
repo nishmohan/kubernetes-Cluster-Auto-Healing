@@ -1,0 +1,73 @@
+{
+  "annotations":{"list":[{"builtIn":1,"type":"dashboard","name":"Annotations & Alerts","enable":true,"hide":true}]},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Nodes Ready (count)",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets": [{"expr":"sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})","refId":"A"}],
+      "options":{"reduceOptions":{"calcs":["lastNotNull"]},"orientation":"horizontal","colorMode":"value"}
+    },
+    {
+      "type": "table",
+      "title": "Node Readiness by Node (1=Ready)",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets": [{"expr":"sum by (node) (kube_node_status_condition{condition=\"Ready\",status=\"true\"})","refId":"A"}],
+      "transformations":[{"id":"organize","options":{"renameByName":{"Value":"ready"}}}],
+      "options":{"showHeader":true}
+    },
+    {
+      "type": "table",
+      "title": "Pods Ready (1=Ready)",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets":[{"expr":"max by (namespace,pod) (kube_pod_status_ready{condition=\"true\"})","refId":"A"}],
+      "transformations":[{"id":"organize","options":{"renameByName":{"Value":"ready"}}}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Container Restarts (per pod)",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets":[{"expr":"sum by (namespace,pod) (kube_pod_container_status_restarts_total)","refId":"A"}],
+      "fieldConfig":{"defaults":{"unit":"short"}}
+    },
+    {
+      "type": "timeseries",
+      "title": "Restart Spikes (last 5m, top 10)",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets":[{"expr":"topk(10, increase(kube_pod_container_status_restarts_total[5m]))","refId":"A"}],
+      "fieldConfig":{"defaults":{"unit":"short"}}
+    },
+    {
+      "type": "timeseries",
+      "title": "Node CPU usage %",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets":[{"expr":"100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)","refId":"A"}],
+      "fieldConfig":{"defaults":{"unit":"percent"}}
+    },
+    {
+      "type": "timeseries",
+      "title": "Node Memory usage %",
+      "datasource": {"type":"prometheus","uid":""},
+      "targets":[{"expr":"(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100","refId":"A"}],
+      "fieldConfig":{"defaults":{"unit":"percent"}}
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["k8s","health","sprint-2"],
+  "templating": {
+    "list": [
+      {
+        "type": "datasource",
+        "name": "DS_PROMETHEUS",
+        "query": "prometheus",
+        "refresh": 1
+      }
+    ]
+  },
+  "time": {"from":"now-6h","to":"now"},
+  "title": "K8s Health (Sprint 2)"
+}

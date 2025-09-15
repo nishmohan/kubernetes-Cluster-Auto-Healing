@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spread-demo
+  namespace: default
+spec:
+  replicas: 20
+  selector: { matchLabels: { app: spread-demo } }
+  template:
+    metadata: { labels: { app: spread-demo } }
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector: { matchLabels: { app: spread-demo } }
+      containers:
+      - name: pause
+        image: registry.k8s.io/pause:3.9
+        resources:
+          requests: { cpu: "10m", memory: "16Mi" }
