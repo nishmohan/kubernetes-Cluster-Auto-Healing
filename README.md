@@ -71,6 +71,37 @@ Visit Grafana: http://localhost:3000
 <img width="1914" height="564" alt="image" src="https://github.com/user-attachments/assets/4a13a0cc-bbee-4b08-8980-1c025229d53c" />
 <img width="1761" height="809" alt="image" src="https://github.com/user-attachments/assets/73af5f77-8ef5-481a-9e55-3610ad056b21" />
 
+ ### Sprint 2 - Health Monitoring
+ I setup kube-state-metrics using commands:
+ ```
+helm upgrade --install kube-state-metrics prometheus-community/kube-state-metrics -n monitoring --create-namespace
+kubectl -n monitoring get pods -l app.kubernetes.io/name=kube-state-metrics
+
+#checked metrics and give result successfully
+kubectl -n monitoring get svc kube-state-metrics
+
+#setup a variable
+$REL = kubectl -n monitoring get servicemonitor -o jsonpath='{.items[0].metadata.labels.release}'
+```
+
+I created kube-health-basic-alerts.yaml
+After that I ran following commands to setup Alertmanager:
+```
+kubectl apply -f kube-health-basic-alerts.yaml
+kubectl -n monitoring get prometheusrule kube-health-basic-alerts
+kubectl -n monitoring port-forward svc/prometheus-kube-prometheus-alertmanager 9093:9093
+
+```
+Here is the screen shot for Alertmanager
+<img width="1703" height="936" alt="image" src="https://github.com/user-attachments/assets/f053bf39-a8bc-44f9-bfcf-39c599188272" />
+
+Then create pods and check it:
+```
+kubectl apply -f bad-pod.yaml
+kubectl get pod crashy -w
+```
+
+
 
 
 
