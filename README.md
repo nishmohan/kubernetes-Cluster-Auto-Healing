@@ -40,6 +40,42 @@ Managing large-scale Kubernetes clusters manually is resource-intensive and erro
 go get k8s.io/client-go@latest
 go get k8s.io/apimachinery@latest
 ```
+I configured docker-desktop context as a cluster on local using following command:
+```
+kubectl config use-context docker-desktop
+```
+To install all Dependencies for Go used following command.
+```
+go mod tidy
+go mod verify
+```
+Deploy Prometheus and Grafana into your Kubernetes cluster
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+
+#Check the installation
+kubectl get pods -n monitoring
+```
+### Access Prometheus and Grafana UIs
+```
+kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090
+Visit Prometheus: http://localhost:9090
+
+#Then in another terminal:
+kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
+Visit Grafana: http://localhost:3000
+
+```
+<img width="1914" height="564" alt="image" src="https://github.com/user-attachments/assets/4a13a0cc-bbee-4b08-8980-1c025229d53c" />
+<img width="1761" height="809" alt="image" src="https://github.com/user-attachments/assets/73af5f77-8ef5-481a-9e55-3610ad056b21" />
+
+
+
+
+
+
   
 
  
