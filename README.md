@@ -29,10 +29,12 @@ Managing large-scale Kubernetes clusters manually is resource-intensive and erro
    - Install Helm
   #### Kubernetes API Setup using Go
   I wrote go code as below structure:
+  ```
   k8s-health-checker/
      ├── go.mod
      ├── go.sum
-     └── main.go   
+     └── main.go
+```
   Then installed required module using commands:
   ```
 go get k8s.io/client-go@latest
