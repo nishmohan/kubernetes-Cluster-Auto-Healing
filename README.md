@@ -19,14 +19,14 @@ Managing large-scale Kubernetes clusters manually is resource-intensive and erro
 
 
  ## Sprint-by-Sprint Breakdown
- ### Sprint 1 – Setup
-  This sprint sets the foundation for your Kubernetes Cluster Health Checker and Auto-Healing system.
- ### Pre-requisites setup
-  - Setup Docker Desktop
-  - Kubernetes cluster (minikube, kind, EKS and others)
-  - A valid kubeconfig to authenticate
-  - I installed Go to local system
-  - Install Helm
+  ### Sprint 1 – Setup
+   This sprint sets the foundation for your Kubernetes Cluster Health Checker and Auto-Healing system.
+  #### Pre-requisites setup
+   - Setup Docker Desktop
+   - Kubernetes cluster (minikube, kind, EKS and others)
+   - A valid kubeconfig to authenticate
+   - I installed Go to local system
+   - Install Helm
  
 
   
