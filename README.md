@@ -158,6 +158,8 @@ kubectl auth can-i --as=system:serviceaccount:autoheal:autoheal-sa create events
 ```
 
 
+### Sprint 4 - Pod-Level Auto-Healing
+
 
 
 
