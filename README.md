@@ -131,6 +131,37 @@ More details check below screen shots:
 <img width="1223" height="62" alt="image" src="https://github.com/user-attachments/assets/37042b41-a13e-46e7-a05d-d26a64a591df" />
 <img width="1543" height="296" alt="image" src="https://github.com/user-attachments/assets/8faf5b0a-25ad-4e60-b533-f181f90ef9d1" />
 
+Testing purpose I created crashy-deploy.yaml then ran commands and achive following steps:
+  - Test self-healing actions in a staging environment.
+  - Log each action for auditing and reporting.
+```
+kubectl -n default get pods -l app=crashy -w
+```
+Open new terminal and run command:
+- Add automated resource cleanup for pods in "CrashLoopBackOff" or "Evicted" states.
+```
+kubectl -n autoheal logs deploy/autoheal -f | Select-String -Pattern CrashLoopBackOff
+```
+<img width="1548" height="345" alt="image" src="https://github.com/user-attachments/assets/10b2b263-dba5-4236-99c1-023bec46b3e7" />
+
+After everything done I clean up using commands:
+```
+kubectl -n default delete deployment crashy
+Remove-Item .\crashy-deploy.yaml
+
+```
+Also checked if RBAC is effective:
+```
+kubectl auth can-i --as=system:serviceaccount:autoheal:autoheal-sa list pods --all-namespaces
+kubectl auth can-i --as=system:serviceaccount:autoheal:autoheal-sa delete pods --all-namespaces
+kubectl auth can-i --as=system:serviceaccount:autoheal:autoheal-sa create events --all-namespaces
+```
+
+
+
+
+
+
 
 
 
