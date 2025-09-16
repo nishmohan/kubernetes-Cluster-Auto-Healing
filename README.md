@@ -101,6 +101,38 @@ kubectl apply -f bad-pod.yaml
 kubectl get pod crashy -w
 ```
 
+ ### Sprint 3 - Pod-Level Auto-Healing
+ Automate pod recovery processes and ensure that self-healing actions are logged for transparency.
+ To achieve this I created autoheal-rbac.yaml and controller directory then installed dependencies:
+ ```
+ kubectl apply -f autoheal-rbac.yaml
+ go mod init example.com/autoheal
+ go get k8s.io/client-go@v0.30.0 k8s.io/api@v0.30.0 k8s.io/apimachinery@v0.30.0
+
+ #Verify the go
+  go mod tidy
+  go mod verify
+
+ #deploy the controller using commands
+ kubectl apply -f autoheal-rbac.yaml
+ kubectl apply -f autoheal-deploy.yaml
+
+```
+After set this autuheal process then checked it's runing or not. Also print the log using following commands:
+```
+kubectl -n autoheal get deploy autoheal
+kubectl -n autoheal get pods -o wide
+kubectl -n autoheal logs deploy/autoheal --tail=50
+
+```
+More details check below screen shots:
+
+<img width="1104" height="65" alt="image" src="https://github.com/user-attachments/assets/7881d26a-a011-4a75-a5a0-eab556624414" />
+<img width="1223" height="62" alt="image" src="https://github.com/user-attachments/assets/37042b41-a13e-46e7-a05d-d26a64a591df" />
+<img width="1543" height="296" alt="image" src="https://github.com/user-attachments/assets/8faf5b0a-25ad-4e60-b533-f181f90ef9d1" />
+
+
+
 
 
 
