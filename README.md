@@ -276,26 +276,30 @@ B. Configure Alertmanager with customizable alerting rules for different severit
  - Install kube-prometheus-stack (Prometheus + Alertmanager + Grafana) with Slack routing:
 
    ```
+   
    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
    helm repo update
    #create kps-alerts-values.yaml
    helm upgrade --install kps prometheus-community/kube-prometheus-stack  -n $NS --create-namespace -f kps-alerts-values.yaml
-
-   kubectl -n $NS get pods
-   
+   kubectl -n $NS get pods   
   ```
 
+ Add useful alert rules (PrometheusRule) and create a file sprint5-rules.yaml then run following commands:
 
 
   ```
+
   kubectl apply -f sprint5-rules.yaml
   kubectl -n $NS get prometheusrules  
   ```
+
+
 C. Test alerts and notifications to ensure that DevOps teams receive timely updates.
 If Crash any pod then it will send alert to slack channel and I used Direct message then it will send direct message.
 Forcefully can do using below commands:
 
 ```
+
 kubectl create ns s5-test
 kubectl -n s5-test run badimage --image=doesnotexist:latest
 #wait ~2–5 min, you should get PodCrashLooping (and maybe HighPodRestarts)
