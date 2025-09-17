@@ -159,6 +159,91 @@ kubectl auth can-i --as=system:serviceaccount:autoheal:autoheal-sa create events
 
 
 ### Sprint 4 - Pod-Level Auto-Healing
+Ensure the system can scale and balance resources automatically, optimizing cluster performance and cost.
+
+ #### Node Autoscaling
+ - Use Cluster Autoscaler for automatic node scaling.
+ - Configured it with AWS to add/remove nodes based on workload.
+ - Set appropriate thresholds to avoid over-scaling or resource wastage.
+Installed metrics-server:
+```
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl get apiservices v1beta1.metrics.k8s.io
+kubectl top nodes
+
+```
+I need to create multi-node local cluster for thi I have to install "kind" So I installed that and then ran commands:
+
+```
+kind create cluster --name autoscale-lab --config kind-3n.yaml
+kubectl config use-context kind-autoscale-lab
+kubectl get nodes -o wide
+```
+I have created EKS(AWS)- Node Autoscaler Cluster with an autoscalable node group:
+```
+eksctl create cluster --name autoscale-lab-mlal --region us-west-2 `
+  --nodegroup-name ng1 --nodes 1 --nodes-min 1 --nodes-max 4 --managed
+#then get the node
+kubectl get nodes -o wide
+```
+You can refer the screen shots for cluster:
+<img width="1914" height="894" alt="Screenshot 2025-09-17 094115" src="https://github.com/user-attachments/assets/7e51fdfd-e968-46e6-82c0-5a0e895c3ff9" />
+<img width="1885" height="838" alt="Screenshot 2025-09-17 094650" src="https://github.com/user-attachments/assets/4cb9c2a8-3ad9-4820-ba7c-5badef13494f" />
+<img width="1866" height="836" alt="Screenshot 2025-09-17 094731" src="https://github.com/user-attachments/assets/5cdfe37d-b6c2-4670-9093-c453ba088e74" />
+<img width="1885" height="879" alt="Screenshot 2025-09-17 094752" src="https://github.com/user-attachments/assets/4909cbf2-6509-416f-8589-78328e0935c5" />
+<img width="1892" height="901" alt="Screenshot 2025-09-17 094808" src="https://github.com/user-attachments/assets/4a0a6766-b115-4bb0-a0b6-a5c6867748cb" />
+<img width="1863" height="863" alt="Screenshot 2025-09-17 094831" src="https://github.com/user-attachments/assets/0e7a145c-fb61-40f3-af7e-3eec859e9efb" />
+<img width="1470" height="759" alt="Screenshot 2025-09-17 094854" src="https://github.com/user-attachments/assets/44f85a63-d23a-4d08-99e7-005ae68878e1" />
+<img width="1516" height="736" alt="Screenshot 2025-09-17 095441" src="https://github.com/user-attachments/assets/9ced25d0-5c11-4c71-86c7-c3ae43c5c8b2" />
+<img width="1531" height="760" alt="Screenshot 2025-09-17 095523" src="https://github.com/user-attachments/assets/ab1495fd-b444-49bd-b8e2-09b149e067e5" />
+<img width="1910" height="789" alt="Screenshot 2025-09-17 094326" src="https://github.com/user-attachments/assets/52897113-db8c-49fd-8453-53d78e8b935b" />
+<img width="1888" height="840" alt="Screenshot 2025-09-17 094602" src="https://github.com/user-attachments/assets/178c9d3e-be28-4de0-a728-e3315932ea31" />
+<img width="1862" height="848" alt="Screenshot 2025-09-17 094626" src="https://github.com/user-attachments/assets/79b0fab4-cc65-4665-b809-c4e2fdb5354b" />
+
+It's not allowing the IAM role to full access for cluster So I used EKS Pod Identity for Cluster Autoscaler and this avoids the blocked IAM action and is fully supported.
+
+```
+aws eks create-addon --cluster-name autoscale-lab-mlal --region us-west-2 --addon-name eks-pod-identity-agent
+aws eks describe-addon --cluster-name autoscale-lab-mlal --region us-west-2 --addon-name eks-pod-identity-agent
+
+#Create an IAM role for Cluster Autoscaler (Pod Identity trust)
+aws iam create-role --role-name EKSCA-PodIdentity-Role --assume-role-policy-document file://ca-trust.json
+
+```
+
+Attach a policy that lets CA scale your ASG
+```
+$policyArn = aws iam create-policy --policy-name EKSCA-Policy  --policy-document file://ca-policy.json --query Policy.Arn --output text
+aws iam attach-role-policy --role-name EKSCA-PodIdentity-Role --policy-arn $policyArn
+
+```
+Create the CA service account & Pod Identity association and that API is purpose-built to connect a K8s service account to an IAM role via Pod Identity.
+
+```
+# Make sure the SA exists first
+kubectl -n kube-system create serviceaccount cluster-autoscaler --dry-run=client -o yaml | kubectl apply -f -
+
+# Link the SA to your IAM role (Pod Identity association)
+$roleArn = (aws iam get-role --role-name EKSCA-PodIdentity-Role --query Role.Arn --output text)
+aws eks create-pod-identity-association `
+  --cluster-name autoscale-lab-mlal `
+  --namespace kube-system `
+  --service-account cluster-autoscaler `
+  --role-arn $roleArn `
+  --region us-west-2
+```
+After that I installed the  Cluster Autoscaler and it will be targeted nodegroup directly.
+```
+helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -n kube-system -f ca-values.yaml
+kubectl -n kube-system rollout status deploy/cluster-autoscaler
+
+```
+After that I setup HPA demo app for testing. 
+
+
+
+
+
 
 
 
