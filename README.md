@@ -296,9 +296,9 @@ Forcefully can do using below commands:
 ```
 kubectl create ns s5-test
 kubectl -n s5-test run badimage --image=doesnotexist:latest
-# wait ~2–5 min, you should get PodCrashLooping (and maybe HighPodRestarts)
+#wait ~2–5 min, you should get PodCrashLooping (and maybe HighPodRestarts)
 kubectl -n s5-test get pods -w
-# cleanup
+
 kubectl delete ns s5-test
 ```
 
