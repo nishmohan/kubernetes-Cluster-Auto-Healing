@@ -241,6 +241,85 @@ kubectl -n kube-system rollout status deploy/cluster-autoscaler
 After that I setup HPA demo app for testing. 
 
 
+### Sprint 5 - Alerts & Notifications
+Implement a comprehensive alerting and notification system to keep the team informed of critical events and actions.
+
+A. Integrate Slack or Teams API for real-time notifications on critical issues or auto-healing actions.
+ - I did setup slack webhook: Create a Slack Incoming Webhook (browser-only) using URL: https://api.slack.com/apps
+ - Click Create New App → From scratch and
+    - App name: k8s-alerts
+    - Pick your workspace.
+  - In the left sidebar, go to Features → Incoming Webhooks and turn it ON.
+  - Click Add New Webhook to Workspace, choose the channel (e.g. #k8s-alerts), then Allow.
+  - Copy the generated Webhook URL (looks like https://hooks.slack.com/services/...).
+
+    For reference check below screenshots:
+    
+![Untitled](https://github.com/user-attachments/assets/1ee3162e-0d5f-4521-8017-1c91cda360a2)
+![Untitled-1](https://github.com/user-attachments/assets/56d9ed04-189d-483d-b5d6-5d94d9078f88)
+![WhatsApp Image 2025-09-17 at 6 46 35 PM](https://github.com/user-attachments/assets/6fed3776-7dfc-4ab7-95df-57652940b57b)
+
+Then configured the Slack Webhook URL to Docker-Dekstop:
+```
+$NS = "monitoring"
+kubectl create namespace $NS --dry-run=client -o yaml | kubectl apply -f -
+
+# Replace the URL with your actual Slack webhook:
+$SLACK = "https://hooks.slack.com/services/ssss/ssss/zzzz"
+kubectl -n $NS create secret generic am-slack-webhook `
+  --from-literal=slack_api_url="$SLACK" `
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+B. Configure Alertmanager with customizable alerting rules for different severity levels.
+ - Install kube-prometheus-stack (Prometheus + Alertmanager + Grafana) with Slack routing
+
+   ```
+   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+   helm repo update
+
+   #create kps-alerts-values.yaml
+   helm upgrade --install kps prometheus-community/kube-prometheus-stack  -n $NS --create-namespace -f kps-alerts-values.yaml
+
+   # verify pods
+   kubectl -n $NS get pods
+
+  ```
+- Add useful alert rules (PrometheusRule) and create a file sprint5-rules.yaml then run following commands:
+```
+kubectl apply -f sprint5-rules.yaml
+kubectl -n $NS get prometheusrules
+
+```
+C. Test alerts and notifications to ensure that DevOps teams receive timely updates.
+If Crash any pod then it will send alert to slack channel and I used Direct message then it will send direct message.
+Forcefully can do using below commands:
+```
+kubectl create ns s5-test
+kubectl -n s5-test run badimage --image=doesnotexist:latest
+# wait ~2–5 min, you should get PodCrashLooping (and maybe HighPodRestarts)
+kubectl -n s5-test get pods -w
+# cleanup
+kubectl delete ns s5-test
+
+```
+Direct message will receive on slack:
+![WhatsApp Image 2025-09-17 at 6 46 57 PM](https://github.com/user-attachments/assets/56e56240-6560-4c9c-81d9-deb18c98d001)
+
+
+Here are the screen shots for Docker Desktop:
+<img width="1871" height="878" alt="image" src="https://github.com/user-attachments/assets/e3e91526-7a64-4924-b6ed-ff435e46c305" />
+<img width="1511" height="511" alt="image" src="https://github.com/user-attachments/assets/34c37def-750a-4e61-bc9f-7fdef70bd40e" />
+<img width="1521" height="494" alt="image" src="https://github.com/user-attachments/assets/c1307247-207b-4a6e-ba39-744773f6858c" />
+
+
+
+
+
+
+
+
+
+
 
 
 
