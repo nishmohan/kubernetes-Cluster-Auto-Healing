@@ -270,13 +270,14 @@ kubectl -n $NS create secret generic am-slack-webhook `
   --from-literal=slack_api_url="$SLACK" `
   --dry-run=client -o yaml | kubectl apply -f -
 ```
+
 B. Configure Alertmanager with customizable alerting rules for different severity levels.
- - Install kube-prometheus-stack (Prometheus + Alertmanager + Grafana) with Slack routing
+
+ - Install kube-prometheus-stack (Prometheus + Alertmanager + Grafana) with Slack routing:
 
    ```
    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
    helm repo update
-
    #create kps-alerts-values.yaml
    helm upgrade --install kps prometheus-community/kube-prometheus-stack  -n $NS --create-namespace -f kps-alerts-values.yaml
    #verify pods
@@ -288,6 +289,7 @@ B. Configure Alertmanager with customizable alerting rules for different severit
   ```
   kubectl apply -f sprint5-rules.yaml
   kubectl -n $NS get prometheusrules
+  
   ```
 C. Test alerts and notifications to ensure that DevOps teams receive timely updates.
 If Crash any pod then it will send alert to slack channel and I used Direct message then it will send direct message.
