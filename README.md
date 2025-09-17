@@ -300,8 +300,8 @@ kubectl -n s5-test run badimage --image=doesnotexist:latest
 kubectl -n s5-test get pods -w
 # cleanup
 kubectl delete ns s5-test
-
 ```
+
 Direct message will receive on slack:
 ![WhatsApp Image 2025-09-17 at 6 46 57 PM](https://github.com/user-attachments/assets/56e56240-6560-4c9c-81d9-deb18c98d001)
 
