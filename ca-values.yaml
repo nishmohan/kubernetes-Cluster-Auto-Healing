@@ -3,13 +3,21 @@ awsRegion: us-west-2
 rbac:
   serviceAccount:
     create: false
-    name: cluster-autoscaler   # use the SA we created & associated
+    name: cluster-autoscaler
+
+# <-- This satisfies the chart's requirement
+autoDiscovery:
+  clusterName: autoscale-lab-mlal
+
 image:
-  tag: v1.33.0
+  # match control-plane minor, example v1.32.0
+  tag: v1.32.0
+
 extraArgs:
   expander: least-waste
   balance-similar-node-groups: "true"
   scan-interval: 10s
   skip-nodes-with-local-storage: "false"
   skip-nodes-with-system-pods: "false"
-  nodes: "1:3:ng1"            # explicit nodegroup target (no ASG tags needed)
+  # we still target your nodegroup explicitly (works even with autoDiscovery present)
+  nodes: "1:3:ng1"

@@ -1,0 +1,49 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: sprint5-rules
+  namespace: monitoring
+  labels:
+    release: kps
+spec:
+  groups:
+  - name: k8s.sprint5.core
+    rules:
+    - alert: Watchdog
+      expr: vector(1)
+      for: 1m
+      labels: { severity: info }
+      annotations:
+        summary: "Watchdog (pipeline health)"
+        description: "Always-firing alert to confirm end-to-end delivery works."
+    - alert: PodCrashLooping
+      expr: sum by (namespace,pod) (kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"}) > 0
+      for: 2m
+      labels: { severity: warning }
+      annotations:
+        summary: "Pod crashlooping"
+        description: "A pod is in CrashLoopBackOff for >2m. Inspect logs/restarts."
+    - alert: HighPodRestarts
+      expr: sum by (namespace,pod) (increase(kube_pod_container_status_restarts_total[5m])) > 5
+      for: 5m
+      labels: { severity: warning }
+      annotations:
+        summary: "High restarts"
+        description: "A pod restarted >5 times in the last 5 minutes."
+    - alert: PendingPods
+      expr: sum(kube_pod_status_phase{phase="Pending"}) > 5
+      for: 10m
+      labels: { severity: warning }
+      annotations:
+        summary: "Many Pending pods"
+        description: "More than 5 pods pending for >10m (capacity/scheduling issue)."
+    - alert: HPAMaxedOut
+      expr: |
+        max_over_time(kube_hpa_status_current_replicas[5m])
+          == on(namespace,name)
+        max_over_time(kube_hpa_spec_max_replicas[5m])
+      for: 10m
+      labels: { severity: warning }
+      annotations:
+        summary: "HPA at max replicas"
+        description: "Workload scaled to HPA max for >10m (may need more capacity)."

@@ -98,7 +98,7 @@ Here is the screen shot for Alertmanager
 Then create pods and check it:
 ```
 kubectl apply -f bad-pod.yaml
-kubectl get pod crashy -w
+kubectl get pod crashy -w  
 ```
 
  ### Sprint 3 - Pod-Level Auto-Healing
