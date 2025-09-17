@@ -284,12 +284,11 @@ B. Configure Alertmanager with customizable alerting rules for different severit
    kubectl -n $NS get pods
   ```
 
-- Add useful alert rules (PrometheusRule) and create a file sprint5-rules.yaml then run following commands:
+ Add useful alert rules (PrometheusRule) and create a file sprint5-rules.yaml then run following commands:
 
   ```
   kubectl apply -f sprint5-rules.yaml
-  kubectl -n $NS get prometheusrules
-  
+  kubectl -n $NS get prometheusrules  
   ```
 C. Test alerts and notifications to ensure that DevOps teams receive timely updates.
 If Crash any pod then it will send alert to slack channel and I used Direct message then it will send direct message.
@@ -304,6 +303,7 @@ kubectl delete ns s5-test
 ```
 
 Direct message will receive on slack:
+
 ![WhatsApp Image 2025-09-17 at 6 46 57 PM](https://github.com/user-attachments/assets/56e56240-6560-4c9c-81d9-deb18c98d001)
 
 
