@@ -280,11 +280,12 @@ B. Configure Alertmanager with customizable alerting rules for different severit
    helm repo update
    #create kps-alerts-values.yaml
    helm upgrade --install kps prometheus-community/kube-prometheus-stack  -n $NS --create-namespace -f kps-alerts-values.yaml
-   #verify pods
+
    kubectl -n $NS get pods
+   
   ```
 
- Add useful alert rules (PrometheusRule) and create a file sprint5-rules.yaml then run following commands:
+
 
   ```
   kubectl apply -f sprint5-rules.yaml
