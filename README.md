@@ -284,41 +284,6 @@ B. Configure Alertmanager with customizable alerting rules for different severit
    kubectl -n $NS get pods   
   ```
 
- Add useful alert rules (PrometheusRule) and create a file sprint5-rules.yaml then run following commands:
-
-
-  ```
-
-  kubectl apply -f sprint5-rules.yaml
-  kubectl -n $NS get prometheusrules  
-  ```
-
-
-C. Test alerts and notifications to ensure that DevOps teams receive timely updates.
-If Crash any pod then it will send alert to slack channel and I used Direct message then it will send direct message.
-Forcefully can do using below commands:
-
-```
-
-kubectl create ns s5-test
-kubectl -n s5-test run badimage --image=doesnotexist:latest
-#wait ~2–5 min, you should get PodCrashLooping (and maybe HighPodRestarts)
-kubectl -n s5-test get pods -w
-kubectl delete ns s5-test
-```
-
-Direct message will receive on slack:
-
-![WhatsApp Image 2025-09-17 at 6 46 57 PM](https://github.com/user-attachments/assets/56e56240-6560-4c9c-81d9-deb18c98d001)
-
-
-Here are the screen shots for Docker Desktop:
-<img width="1871" height="878" alt="image" src="https://github.com/user-attachments/assets/e3e91526-7a64-4924-b6ed-ff435e46c305" />
-<img width="1511" height="511" alt="image" src="https://github.com/user-attachments/assets/34c37def-750a-4e61-bc9f-7fdef70bd40e" />
-<img width="1521" height="494" alt="image" src="https://github.com/user-attachments/assets/c1307247-207b-4a6e-ba39-744773f6858c" />
-
-<img width="1781" height="773" alt="image" src="https://github.com/user-attachments/assets/a7d4fcb7-5f71-4555-854e-b96c18563766" />
-
 
 
 
