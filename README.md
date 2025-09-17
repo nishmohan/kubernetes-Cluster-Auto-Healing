@@ -264,7 +264,7 @@ Then configured the Slack Webhook URL to Docker-Dekstop:
 $NS = "monitoring"
 kubectl create namespace $NS --dry-run=client -o yaml | kubectl apply -f -
 
-# Replace the URL with your actual Slack webhook:
+#Replace the URL with your actual Slack webhook:
 $SLACK = "https://hooks.slack.com/services/ssss/ssss/zzzz"
 kubectl -n $NS create secret generic am-slack-webhook `
   --from-literal=slack_api_url="$SLACK" `
@@ -280,7 +280,7 @@ B. Configure Alertmanager with customizable alerting rules for different severit
    #create kps-alerts-values.yaml
    helm upgrade --install kps prometheus-community/kube-prometheus-stack  -n $NS --create-namespace -f kps-alerts-values.yaml
 
-   # verify pods
+   #verify pods
    kubectl -n $NS get pods
 
   ```
